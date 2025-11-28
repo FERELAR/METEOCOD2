@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Метеокод - Обучающая система метеорологических кодов</title>
+    <meta name="description" content="Программа для обучения работе с метеорологическими кодами">
+    <meta name="theme-color" content="#2196F3">
+    <link rel="stylesheet" href="combined.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Метеокод</h1>
+            <div class="subtitle">Обучающая система для работы с метеорологическими кодами</div>
+        </header>
+
+        <div class="theme-toggle">
+            <button class="btn btn-secondary" onclick="toggleTheme()" aria-label="Переключить тему"><i class="fas fa-moon"></i> Тёмная тема</button>
+        </div>
+
+        <nav class="top-menu" role="tablist">
+            <button class="active" data-page="trainer" aria-selected="true" role="tab"><i class="fas fa-cloud"></i> МЕТЕОКОДЕР</button>
+            <button data-page="minigame" aria-selected="false" role="tab"><i class="fas fa-gamepad"></i> МИНИ-ИГРЫ</button>
+            <button data-page="help" aria-selected="false" role="tab"><i class="fas fa-question-circle"></i> СПРАВКА</button>
+        </nav>
+
+        <main id="page-trainer" class="page active" role="tabpanel">
+            <div class="app-container">
+                <section class="main-content">
+                    <section class="main-content-inner">
+                        <nav class="code-type-selector" role="tablist">
+                            <button class="code-type-btn active" data-type="metar" aria-selected="true" role="tab"><i class="fas fa-plane"></i> METAR/SPECI</button>
+                            <button class="code-type-btn" data-type="kn01" aria-selected="false" role="tab"><i class="fas fa-cloud-rain"></i> КН-01</button>
+                            <button class="code-type-btn" data-type="taf" aria-selected="false" role="tab"><i class="fas fa-clock"></i> TAF</button>
+                            <button class="code-type-btn" data-type="gamet" aria-selected="false" role="tab"><i class="fas fa-map-marked-alt"></i> GAMET</button>
+                            <button class="code-type-btn" data-type="sigmet" aria-selected="false" role="tab"><i class="fas fa-exclamation-triangle"></i> SIGMET</button>
+                            <button class="code-type-btn" data-type="warep" aria-selected="false" role="tab"><i class="fas fa-bolt"></i> WAREP</button>
+                            <button class="code-type-btn" data-type="kn04" aria-selected="false" role="tab"><i class="fas fa-wind"></i> КН-04</button>
+                            <button class="code-type-btn" data-type="airmet" aria-selected="false" role="tab"><i class="fas fa-cloud-meatball"></i> AIRMET</button>
+                        </nav>
+
+                        <div id="dev-message" class="instructions" style="display: none; text-align: center; font-weight: 700;">
+                            В разработке
+                        </div>
+
+                        <nav class="mode-selector" role="tablist">
+                            <div class="mode-btn active" data-mode="decode" aria-selected="true" role="tab">
+                                <i class="fas fa-search"></i>
+                                <h3>Авторасшифровка</h3>
+                                <p>Программа расшифрует код за вас</p>
+                            </div>
+                            <div class="mode-btn" data-mode="practice-decode" aria-selected="false" role="tab">
+                                <i class="fas fa-check"></i>
+                                <h3>Проверка знаний (Расшифровка)</h3>
+                                <p>Проверьте свои навыки расшифровки</p>
+                            </div>
+                            <div class="mode-btn" data-mode="practice-encode" aria-selected="false" role="tab">
+                                <i class="fas fa-pencil-alt"></i>
+                                <h3>Проверка знаний (Кодирование)</h3>
+                                <p>Закодируйте описание погоды</p>
+                            </div>
+                        </nav>
+
+                        <div class="input-section">
+                            <div class="mode-content active" id="decode-content">
+                                <div class="instructions" id="decode-instructions">
+                                    <strong>Режим авторасшифровки:</strong> Введите код в поле ниже и нажмите "Расшифровать".
+                                    <ul>
+                                        <li title="Международный код для текущей погоды на аэродроме">Поддержка METAR: Полная расшифро...</li>
+                                        <li title="Прогноз погоды на аэродроме">TAF: Включая изменения FM/TEMPO.</li>
+                                        <li title="Синоптический код для наземных наблюдений">KN-01: Базовая расшифровка.</li>
+                                        <li>И другие коды с подсказками.</li>
+                                    </ul>
+                                </div>
+                                <div class="input-group">
+                                    <label for="metar-input">Код:</label>
+                                    <textarea id="metar-input" placeholder="Введите код..." list="code-examples"></textarea>
+                                    <datalist id="code-examples">
+                                        <option value="UUWW 141630Z 05007MPS 9999 SCT020 17/12 Q1011 R32/290050 NOSIG">
+                                        <option value="TAF UUWW 141600Z 1418/1524 03005MPS 9999 BKN015 TX15/1412Z TN10/1503Z">
+                                    </datalist>
+                                </div>
+                                <button class="btn" onclick="decodeCode()" aria-label="Расшифровать код"><i class="fas fa-decode"></i> Расшифровать</button>
+                                <button class="btn btn-secondary" onclick="clearFields()" aria-label="Очистить поля"><i class="fas fa-trash"></i> Очистить</button>
+                                <button class="btn btn-copy" onclick="copyCode('metar-input')" aria-label="Скопировать код"><i class="fas fa-copy"></i> Скопировать код</button>
+                                <div id="loading-decode" class="loading" aria-live="polite" style="display: none;"><i class="fas fa-spinner fa-spin"></i> Обработка...</div>
+                                <div class="input-group">
+                                    <label>Результат расшифровки:</label>
+                                    <div class="result" id="decode-result">Здесь появится расшифровка кода...</div>
+                                </div>
+                            </div>
+
+                            <div class="mode-content" id="practice-decode-content">
+                                <div class="instructions">
+                                    <strong>Режим проверки расшифровки:</strong> Расшифруйте предложенный код и проверьте свои знания.
+                                    <ul>
+                                        <li>Используйте подсказки в боковой панели для помощи.</li>
+                                        <li>Проверьте точность температуры, ветра и видимости.</li>
+                                    </ul>
+                                </div>
+                                <div class="input-group">
+                                    <label>Код для расшифровки:</label>
+                                    <div class="result" id="practice-code">UUWW 141630Z 05007MPS 9999 SCT020 17/12 Q1011 NOSIG</div>
+                                    <button class="btn btn-copy" onclick="copyCode('practice-code')" aria-label="Скопировать код"><i class="fas fa-copy"></i> Скопировать код</button>
+                                </div>
+                                <div class="input-group">
+                                    <label for="user-decode">Ваша расшифровка:</label>
+                                    <textarea id="user-decode" placeholder="Введите вашу расшифровку здесь..."></textarea>
+                                </div>
+                                <button class="btn" onclick="checkDecode()" aria-label="Проверить расшифровку"><i class="fas fa-check"></i> Проверить</button>
+                                <button class="btn btn-secondary" onclick="newPracticeCode()" aria-label="Новый код"><i class="fas fa-refresh"></i> Новый код</button>
+                                <div id="loading-practice-decode" class="loading" aria-live="polite" style="display: none;"><i class="fas fa-spinner fa-spin"></i> Проверка...</div>
+                                <div class="result" id="practice-decode-result">Результат проверки...</div>
+                                <div class="comparison-container" id="decode-comparison" style="display: none;">
+                                    <div class="comparison-box">
+                                        <h4>Ваш ответ:</h4>
+                                        <div id="user-decode-display"></div>
+                                    </div>
+                                    <div class="comparison-box">
+                                        <h4>Правильный ответ:</h4>
+                                        <div id="correct-decode-display"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mode-content" id="practice-encode-content">
+                                <div class="instructions">
+                                    <strong>Режим проверки кодирования:</strong> Прочитайте описание погоды и закодируйте его.
+                                    <ul>
+                                        <li>Убедитесь в правильном формате групп.</li>
+                                        <li>Используйте подсказку для структуры.</li>
+                                    </ul>
+                                </div>
+                                <div class="input-group">
+                                    <label>Описание погоды для кодирования:</label>
+                                    <div class="result" id="weather-description">
+                                        Здесь появится описание погоды для кодирования...
+                                    </div>
+                                </div>
+                                <div id="encode-hint" class="result" style="display: none; margin-bottom: 1rem;"></div>
+                                <div class="input-group">
+                                    <label for="user-encode">Ваш код:</label>
+                                    <textarea id="user-encode" placeholder="Введите ваш код здесь..." list="code-examples"></textarea>
+                                </div>
+                                <button class="btn" onclick="checkEncode()" aria-label="Проверить кодирование"><i class="fas fa-check"></i> Проверить кодирование</button>
+                                <button class="btn btn-secondary" onclick="newEncodeExercise()" aria-label="Новое задание"><i class="fas fa-refresh"></i> Новое задание</button>
+                                <button class="btn btn-secondary" onclick="showEncodeHint()" aria-label="Показать подсказку"><i class="fas fa-lightbulb"></i> Подсказка</button>
+                                <button class="btn btn-secondary" onclick="showNextHint()" aria-label="Следующая подсказка" style="display: none;" id="next-hint-btn"><i class="fas fa-step-forward"></i> Следующая подсказка</button>
+                                <div id="loading-practice-encode" class="loading" aria-live="polite" style="display: none;"><i class="fas fa-spinner fa-spin"></i> Проверка...</div>
+                                <div class="result" id="practice-encode-result">Результат проверки кодирования...</div>
+                                <div class="comparison-container" id="encode-comparison" style="display: none;">
+                                    <div class="comparison-box">
+                                        <h4>Ваш ответ:</h4>
+                                        <div id="user-answer-display"></div>
+                                    </div>
+                                    <div class="comparison-box">
+                                        <h4>Правильный ответ:</h4>
+                                        <div id="correct-answer-display"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <section class="stats-container" id="trainer-stats">
+                            <h4>Статистика сессии:</h4>
+                            <p><i class="fas fa-tasks" style="color: blue;"></i> Расшифровано кодов: <span id="decoded-count">0</span></p>
+                            <p><i class="fas fa-check-circle" style="color: green;"></i> Правильных ответов: <span id="correct-percent">0%</span></p>
+                            <p><i class="fas fa-times-circle" style="color: red;"></i> Ошибок по типам:</p>
+                            <ul id="errors-by-type"></ul>
+                            <p><i class="fas fa-level-up-alt" style="color: orange;"></i> Уровень: <span id="trainer-level">1</span></p>
+                            <progress id="level-progress" value="0" max="50"></progress>
+                            <p id="badge"><i class="fas fa-award" style="color: gold;"></i> Бейдж: Новичок</p>
+                            <button class="btn btn-secondary" onclick="resetStats()" aria-label="Сброс статистики"><i class="fas fa-undo"></i> Сброс статистики</button>
+                        </section>
+                    </section>
+                </section>
+
+                <aside class="sidebar">
+                    <h3>Справочная информация</h3>
+                    <div class="instructions" id="sidebar-hints">
+                        <strong>METAR</strong> - авиационная регулярная сводка погоды. <span title="Подсказка: CAVOK означает видимость >10км">...</span>
+                    </div>
+                    <div class="accordion">
+                        <h4 onclick="toggleAccordion(this)" aria-expanded="false" role="button"><i class="fas fa-wind"></i> Ветер</h4>
+                        <div class="panel" style="display: none;">Примеры: 05007MPS - 50° 7 м/с; VRB02KT - переменный 2 узла.</div>
+                        <h4 onclick="toggleAccordion(this)" aria-expanded="false" role="button"><i class="fas fa-eye"></i> Видимость</h4>
+                        <div class="panel" style="display: none;">Примеры: 9999 - 10 км+; 0500 - 500 м.</div>
+                        <h4 onclick="toggleAccordion(this)" aria-expanded="false" role="button"><i class="fas fa-cloud"></i> Облачность</h4>
+                        <div class="panel" style="display: none;">Примеры: SCT020 - рассеянная 2000 ft; BKN005CB - значительная 500 ft кучево-дождевые.</div>
+                    </div>
+                    <div class="input-group">
+                        <label>Подсказки по формату:</label>
+                        <div class="result" id="hints">
+UUWW - Аэропорт Внуково
+141630Z - 14 число, 16:30 UTC
+05007MPS - Ветер 050°, 7 м/с
+9999 - Видимость 10+ км
+SCT020 - Облачность рассеянная на 2000 футов
+17/12 - Температура 17°C, точка росы 12°C
+Q1011 - Давление 1011 гПа
+NOSIG - Без значительных изменений
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+        <section id="page-minigame" class="page" role="tabpanel">
+            <div class="main-content">
+                <div class="game-selector">
+                    <button class="btn active" data-game="find-error">Найди ошибку!</button>
+                    <button class="btn" data-game="guess-code">Угадай код!</button>
+                    <button class="btn" data-game="speed-decode">Скоростная расшифровка</button>
+                    <button class="btn" data-game="code-builder">Собери код</button>
+                    <button class="btn" data-game="quiz-bowl">Викторина</button>
+                    <button class="btn" data-game="scenario-pilot">Сценарий полёта</button>
+                    <button class="btn" data-game="taf-predictor">Прогнозатор</button>
+                    <button class="btn" data-game="flight-planner">Flight Planner</button>
+                    <button class="btn" data-game="weather-slot">Автомат погоды</button>
+                </div>
+
+                <div id="game-find-error" class="game-container active">
+                    <h1>МетеоКодер: Найди ошибку!</h1>
+                    <p>Выбери неправильные группы в метеокоде. У тебя 3 попытки!</p>
+                    <div class="stats">
+                        <div>Очки: <span id="score" class="score">0</span></div>
+                        <div>Уровень: <span id="level" class="level">1</span></div>
+                        <div>Попытки: <span id="attempts">3</span></div>
+                    </div>
+                <div class="mode-buttons">
+                        <button class="btn active" id="btn-metar">METAR</button>
+                        <button class="btn" id="btn-taf">TAF</button>
+                  </div>
+                    <div class="diff-buttons">
+                        <button class="btn" onclick="startGame('easy')">Лёгкий</button>
+                        <button class="btn" onclick="startGame('medium')">Средний</button>
+                        <button class="btn" onclick="startGame('hard')">Сложный</button>
+                    </div>
+                    <div id="meteo-code"></div>
+
+                    <div id="correct-groups" class="result" style="display:none; min-height: auto;"></div>
+
+                    <div>
+                        <button class="btn" id="check-btn" disabled>Проверить</button>
+                        <button class="btn btn-secondary" onclick="showHintFindError()">Подсказка</button>
+                    </div>
+                    <div id="result"></div>
+                </div>
+
+                <div id="game-guess-code" class="game-container">
+                    <h1>МетеоКодер: Угадай код!</h1>
+                    <p>Угадайте код для погодного явления. У тебя 3 попытки!</p>
+                    <div class="stats">
+                        <div>Очки: <span id="guess-score" class="score">0</span></div>
+                        <div>Уровень: <span id="guess-level" class="level">1</span></div>
+                        <div>Попытки: <span id="attempts-guess">3</span></div>
+                    </div>
+                    <div class="code-type-buttons">
+                        <button class="btn active" id="guess-metar">METAR</button>
+                    </div>
+                    <div id="phenomenon-desc"></div>
+                    <input type="text" id="guess-input" placeholder="Введите код">
+                    <button class="btn btn-secondary" onclick="document.getElementById('guess-input').value = '';">Очистить</button>
+                    <button class="btn" id="guess-check" disabled>Проверить</button>
+                    <button class="btn btn-secondary" onclick="showHintGuessCode()">Подсказка</button>
+                    <button class="btn" onclick="startGuessGame()">Новое задание</button>
+                    <div id="guess-result"></div>
+                </div>
+
+                <div id="game-speed-decode" class="game-container">
+                    <h1>Скоростная расшифровка</h1>
+                    <p>Расшифруйте METAR за 30 секунд!</p>
+                    <div class="stats">
+                        <div>Очки: <span id="speed-score" class="score">0</span></div>
+                        <div>Уровень: <span id="speed-level" class="level">1</span></div>
+                        <div>Время: <span id="speed-timer">30</span></div>
+                    </div>
+                    <i class="fas fa-cog settings-icon" onclick="openSettings('speed-decode')"></i>
+                    <div id="speed-metar" class="result"></div>
+                    <button class="btn btn-copy" onclick="copyCode('speed-metar')">Скопировать код</button>
+                    <form id="speed-form" onsubmit="return false;">
+                        <label>Ветер (напр/скор): <input type="text" id="speed-wind" placeholder="27005MPS"><button class="btn btn-secondary" type="button" onclick="document.getElementById('speed-wind').value = '';">Очистить</button></label>
+                        <label>Видимость: <input type="text" id="speed-vis" placeholder="9999"><button class="btn btn-secondary" type="button" onclick="document.getElementById('speed-vis').value = '';">Очистить</button></label>
+                        <label>Темп/Точка росы: <input type="text" id="speed-temp" placeholder="20/16"><button class="btn btn-secondary" type="button" onclick="document.getElementById('speed-temp').value = '';">Очистить</button></label>
+                        <label>QNH: <input type="text" id="speed-qnh" placeholder="Q1012"><button class="btn btn-secondary" type="button" onclick="document.getElementById('speed-qnh').value = '';">Очистить</button></label>
+                        <button type="button" class="btn" onclick="checkSpeedDecode()">Проверить</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearSpeedDecode()">Очистить</button>
+                    </form>
+                    <div id="speed-result"></div>
+                    <button class="btn btn-secondary" onclick="showHintSpeedDecode()">Подсказка</button>
+                    <button class="btn" onclick="startSpeedDecode()">Новая игра</button>
+                    <button class="btn" id="new-task-speed-decode" style="display: none;" onclick="startSpeedDecode()">Новая задача</button>
+                </div>
+
+                <div id="game-code-builder" class="game-container">
+                    <h1>Собери код</h1>
+                    <p>Перетащите группы в поле ответа в правильном порядке.</p>
+                    <div class="stats">
+                        <div>Очки: <span id="builder-score" class="score">0</span></div>
+                        <div>Уровень: <span id="builder-level" class="level">1</span></div>
+                        <div>Время: <span id="builder-timer" class="level">30</span></div>
+                    </div>
+                    <i class="fas fa-cog settings-icon" onclick="openSettings('code-builder')"></i>
+                    <div id="builder-description" class="instructions">Нажмите "Новая игра"</div>
+
+                    <div style="text-align: left; font-weight: bold; margin-bottom: 5px;">Банк кодов:</div>
+                    <div id="group-pool" style="display: flex; flex-wrap: wrap; justify-content: center;" ondragover="allowDrop(event)" ondrop="dropToPool(event)">
+                    </div>
+
+                    <div style="text-align: left; font-weight: bold; margin-bottom: 5px;">Поле ответа:</div>
+                    <div id="builder-dropzone" class="dropzone" ondragover="allowDrop(event)" ondrop="dropToZone(event)"></div>
+
+                    <button class="btn" onclick="checkCodeBuilder()">Проверить</button>
+                    <button class="btn btn-secondary" onclick="clearBuilderZone()">Очистить</button>
+                    <div id="builder-result"></div>
+                    <br>
+                    <button class="btn btn-secondary" onclick="showHintCodeBuilder()">Подсказка</button>
+                    <button class="btn" onclick="startCodeBuilder()">Новая игра</button>
+                    <button class="btn" id="new-task-code-builder" style="display: none;" onclick="startCodeBuilder()">Новая задача</button>
+                </div>
+
+                <div id="game-quiz-bowl" class="game-container">
+                    <h1>Викторина</h1>
+                    <p>Ответьте на вопросы по метеокодам. Серия из 10 вопросов.</p>
+                    <div class="stats">
+                        <div>Очки: <span id="quiz-score" class="score">0</span></div>
+                        <div>Уровень: <span id="quiz-level" class="level">1</span></div>
+                        <div>Прогресс: <span id="quiz-progress">0/10</span></div>
+                    </div>
+                    <div id="quiz-question" style="font-size: 1.2rem; margin-bottom: 1rem;"></div>
+                    <div class="quiz-options" id="quiz-options"></div>
+                    <button class="btn" onclick="checkQuiz()">Проверить</button>
+                    <div id="quiz-result"></div>
+                    <button class="btn btn-secondary" onclick="showHintQuizBowl()">Подсказка</button>
+                    <button class="btn" onclick="startQuizBowl()">Новая серия</button>
+                    <button class="btn" id="new-task-quiz-bowl" style="display: none;" onclick="nextQuizQuestion()">Новая задача</button>
+                </div>
+
+                <div id="game-scenario-pilot" class="game-container">
+                    <h1>Сценарий полёта</h1>
+                    <p>В разработке</p>
+                </div>
+
+                <div id="game-taf-predictor" class="game-container">
+                    <h1>Прогнозатор</h1>
+                    <p>На основе METAR и TAF предскажите изменения.</p>
+                    <div class="stats">
+                        <div>Очки: <span id="taf-score" class="score">0</span></div>
+                        <div>Уровень: <span id="taf-level" class="level">1</span></div>
+                    </div>
+                    <div id="taf-metar" class="result"></div>
+                    <button class="btn btn-copy" onclick="copyCode('taf-metar')">Скопировать METAR</button>
+                    <div id="taf-taf" class="result"></div>
+                    <button class="btn btn-copy" onclick="copyCode('taf-taf')">Скопировать TAF</button>
+                    <div id="taf-question" style="margin: 10px 0; font-weight: bold;"></div>
+                    <input type="text" id="taf-answer" placeholder="Ваш ответ">
+                    <button class="btn btn-secondary" onclick="document.getElementById('taf-answer').value = '';">Очистить</button>
+                    <button class="btn" onclick="checkTafPredictor()">Проверить</button>
+                    <div id="taf-result"></div>
+                    <button class="btn btn-secondary" onclick="showHintTafPredictor()">Подсказка</button>
+                    <button class="btn" onclick="startTafPredictor()">Новый прогноз</button>
+                    <button class="btn" id="new-task-taf-predictor" style="display: none;" onclick="startTafPredictor()">Новая задача</button>
+                </div>
+
+                <div id="game-flight-planner" class="game-container">
+                    <h1>Flight Planner</h1>
+                    <p>Планируйте маршрут самолета на основе погоды: Полет, Вылет запрещен, Запасной аэропорт.</p>
+                    <div class="stats">
+                        <div>Очки: <span id="planner-score" class="score">0</span></div>
+                        <div>Уровень: <span id="planner-level" class="level">1</span></div>
+                    </div>
+                    <div id="planner-route"></div>
+                    <select id="planner-decision">
+                        <option value="">Решение</option>
+                        <option value="go">Полет разрешен</option>
+                        <option value="no-go">Вылет запрещен</option>
+                        <option value="alternate">Запасной аэропорт</option>
+                    </select>
+                    <button class="btn" onclick="checkFlightPlanner()">Проверить</button>
+                    <div id="planner-result"></div>
+                    <button class="btn btn-secondary" onclick="showHintFlightPlanner()">Подсказка</button>
+                    <button class="btn" onclick="startFlightPlanner()">Новый маршрут</button>
+                </div>
+
+                <div id="game-weather-slot" class="game-container">
+                    <h1>Автомат погоды</h1>
+                    <p>Дерните рычаг и получите прогноз!</p>
+                    <div id="slot-machine">
+                        <div class="reels">
+                            <div class="reel"></div>
+                            <div class="reel"></div>
+                            <div class="reel"></div>
+                        </div>
+                        <button class="btn" id="lever">Дернуть рычаг</button>
+                        <div id="slot-result"></div>
+                    </div>
+                    <div id="animation-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-help" class="page" role="tabpanel">
+            <div class="main-content">
+                <h2>Справочные документы</h2>
+                <ul class="help-list">
+                    <li><a href="https://ato.soyuz.aero/ato/files/doc/meteo_code_TAF.pdf">meteo_code_TAF.pdf</a></li>
+                    <li><a href="https://firstep.ru/library/technical/technical-books/metod_kn01.pdf?ysclid=mia1o55bcn565506023">metod_kn01.pdf</a></li>
+                    <li><a href="https://www.atc.spb.ru/RD/MST.pdf">Инструктивного материала по кодам METAR, SPECI, TAF</a></li>
+                    <li><a href="http://ra.rshu.ru/mps/dwnl/volobueva/%D0%98%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82.%20%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB_GAMET.pdf">Инструк.</a></li>
+                    <li><a href="http://ra.rshu.ru/mps/dwnl/volobueva/%D0%98%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82.%20%D0%BC%D0%B0%D1%82%D0%B5%D1%80%D0%B8%D0%B0%D0%BB_SIGMET_and_AIRMET.pdf">SIGMET/AIRMET</a></li>
+                    <li><a href="https://meteoinfo.ru/images/misc/kn-01-synop.pdf?ysclid=mia1zok1rq901247982">kn-01-synop.pdf</a></li>
+                    <li><a href="http://elib.rshu.ru/files_books/pdf/rid_acbfa3068d234e0faeda7cd3d0510dee.pdf">ПОСОБИЕ ПО СИНОПТИЧЕСКОЙ МЕТЕОРОЛОГИИ </a></li>
+                    <li><a href="https://ohranatruda.ru/upload/iblock/8ad/4293756585.pdf?ysclid=mia214te2t824132625">Инструкция по подготовке и передаче штормовых</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <footer>
+            <p>МетеоКодер - Обучающая система для метеорологов | Версия 1.5</p>
+            <p>Для учебных целей</p>
+        </footer>
+    </div>
+
+    <audio id="ding-sound" src="ding.mp3"></audio>
+    <audio id="buzz-sound" src="buzz.mp3"></audio>
+
+    <div id="settings-panel" class="settings-panel" style="display: none;">
+        <h3>Настройки таймера</h3>
+        <select id="timer-speed">
+            <option value="slow">Медленный (x1.5)</option>
+            <option value="normal" selected>Нормальный</option>
+            <option value="fast">Быстрый (x0.5)</option>
+        </select>
+        <button class="btn" onclick="applySettings()">Применить</button>
+        <button class="btn btn-secondary" onclick="closeSettings()">Закрыть</button>
+    </div>
+    <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; pointer-events: none; z-index: 1000;"></canvas>
+
+    <script src="gameData.js"></script>
+    <script src="gameLogic.js"></script>
+</body>
+</html>
