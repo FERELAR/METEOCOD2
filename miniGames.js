@@ -309,7 +309,7 @@ function checkAnswer() {
     document.querySelectorAll('#meteo-code span').forEach((span, i) => {
         if (selected.has(i)) {
             if (errors.includes(i)) {
-                span.style.background = '#27ae';
+                span.style.background = '#27ae60';
                 span.style.color = 'white';
                 span.style.transform = 'scale(1.2)';
                 span.onclick = null;
@@ -329,7 +329,7 @@ function checkAnswer() {
         stats.games++;
         if (stats.score >= stats.level * 150) stats.level++;
         updateStats();
-        document.getElementById('result').innerHTML = `<span style="color:#27ae;font-weight:bold">Правильно! +${points} очков!</span>`;
+        document.getElementById('result').innerHTML = `<span style="color:#27ae60;font-weight:bold">Правильно! +${points} очков!</span>`;
         document.getElementById('check-btn').disabled = true;
         playSound('ding');
         showConfetti();
@@ -344,7 +344,7 @@ function checkAnswer() {
             document.querySelectorAll('#meteo-code span').forEach((span, i) => {
                 span.onclick = null;
                 if (errors.includes(i)) {
-                    span.style.background = '#27ae';
+                    span.style.background = '#27ae60';
                     span.style.color = 'white';
                     span.style.transform = 'scale(1.2)';
                 }
@@ -878,4 +878,3 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('score')) updateStats();
 
 });
-
